@@ -31,7 +31,6 @@ This project is a web-based application built using Python and Streamlit that al
 - **Scikit-learn**: Library used to build and train the machine learning models.
 - **Pandas**: Data manipulation and analysis library.
 - **Numpy**: Library used for numerical computations.
-- **Matplotlib/Seaborn**: Libraries for visualizing the data (if included).
 
 ## Installation
 
