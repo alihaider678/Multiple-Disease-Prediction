@@ -4,95 +4,105 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 
 # Set page configuration
-st.set_page_config(page_title="Health Assistant",
-                   layout="wide",
-                   page_icon="🧑‍⚕️")
+st.set_page_config(page_title="Health AI Assistant", layout="wide", page_icon="🧑‍⚕️")
 
-    
-# getting the working directory of the main.py
+# Load the models
 working_dir = os.path.dirname(os.path.abspath(__file__))
-
-# loading the saved models
-
 diabetes_model = pickle.load(open(f'{working_dir}/saved_models/diabetes_model.sav', 'rb'))
-
 heart_disease_model = pickle.load(open(f'{working_dir}/saved_models/heart_disease_model.sav', 'rb'))
-
 parkinsons_model = pickle.load(open(f'{working_dir}/saved_models/parkinsons_model.sav', 'rb'))
 
-# sidebar for navigation
+# Sidebar for navigation with new labels
 with st.sidebar:
-    selected = option_menu('Multiple Disease Prediction System',
+    selected = option_menu(
+        'Health AI Assistant: Predict Multiple Diseases',
+        ['Diabetes Prediction', 'Heart Disease Prediction', 'Parkinsons Prediction'],
+        menu_icon='hospital',
+        icons=['activity', 'heart', 'person'],
+        default_index=0
+    )
 
-                           ['Diabetes Prediction',
-                            'Heart Disease Prediction',
-                            'Parkinsons Prediction'],
-                           menu_icon='hospital-fill',
-                           icons=['activity', 'heart', 'person'],
-                           default_index=0)
+# Custom CSS for improving the UI
+st.markdown("""
+    <style>
+        body {
+            background: linear-gradient(to right, #e6f7ff, #ffffff);
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+        .stApp {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .stButton > button {
+            background-color: #004080;
+            color: white;
+            font-size: 1.2em;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .stButton > button:hover {
+            background-color: #002d5e;
+            transform: scale(1.05);
+        }
+        .stTextInput > div > div > input {
+            background-color: #f0f8ff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            border: 2px solid #ccc;
+        }
+        .stTextInput > div > div > input:focus {
+            border-color: #004080;
+            box-shadow: 0 0 8px rgba(0, 64, 128, 0.2);
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
-
-# Diabetes Prediction Page
 if selected == 'Diabetes Prediction':
-
-    # page title
-    st.title('Diabetes Prediction using ML')
-
-    # getting the input data from the user
+    st.title('Diabetes Prediction with AI')
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        Pregnancies = st.text_input('Number of Pregnancies')
+        Pregnancies = st.text_input('Pregnancies Count')
 
     with col2:
-        Glucose = st.text_input('Glucose Level')
+        Glucose = st.text_input('Blood Sugar Level')
 
     with col3:
-        BloodPressure = st.text_input('Blood Pressure value')
+        BloodPressure = st.text_input('Blood Pressure (mmHg)')
 
     with col1:
-        SkinThickness = st.text_input('Skin Thickness value')
+        SkinThickness = st.text_input('Skin Fold Thickness (mm)')
 
     with col2:
-        Insulin = st.text_input('Insulin Level')
+        Insulin = st.text_input('Insulin Level (mu U/ml)')
 
     with col3:
-        BMI = st.text_input('BMI value')
+        BMI = st.text_input('Body Mass Index (BMI)')
 
     with col1:
-        DiabetesPedigreeFunction = st.text_input('Diabetes Pedigree Function value')
+        DiabetesPedigreeFunction = st.text_input('Genetic Risk Factor')
 
     with col2:
-        Age = st.text_input('Age of the Person')
+        Age = st.text_input('Age')
 
-
-    # code for Prediction
     diab_diagnosis = ''
-
-    # creating a button for Prediction
-
-    if st.button('Diabetes Test Result'):
-
-        user_input = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin,
-                      BMI, DiabetesPedigreeFunction, Age]
-
+    if st.button('Get Diabetes Test Result'):
+        user_input = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]
         user_input = [float(x) for x in user_input]
-
         diab_prediction = diabetes_model.predict([user_input])
-
         if diab_prediction[0] == 1:
-            diab_diagnosis = 'The person is diabetic'
+            diab_diagnosis = 'The person has diabetes.'
         else:
-            diab_diagnosis = 'The person is not diabetic'
-
+            diab_diagnosis = 'The person does not have diabetes.'
     st.success(diab_diagnosis)
 
-# Heart Disease Prediction Page
 if selected == 'Heart Disease Prediction':
-
-    # page title
-    st.title('Heart Disease Prediction using ML')
-
+    st.title('Heart Disease Prediction with AI')
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -102,13 +112,13 @@ if selected == 'Heart Disease Prediction':
         sex = st.text_input('Sex')
 
     with col3:
-        cp = st.text_input('Chest Pain types')
+        cp = st.text_input('Chest Pain Types')
 
     with col1:
         trestbps = st.text_input('Resting Blood Pressure')
 
     with col2:
-        chol = st.text_input('Serum Cholestoral in mg/dl')
+        chol = st.text_input('Cholesterol Level')
 
     with col3:
         fbs = st.text_input('Fasting Blood Sugar > 120 mg/dl')
@@ -129,37 +139,24 @@ if selected == 'Heart Disease Prediction':
         slope = st.text_input('Slope of the peak exercise ST segment')
 
     with col3:
-        ca = st.text_input('Major vessels colored by flourosopy')
+        ca = st.text_input('Major vessels colored by fluoroscopy')
 
     with col1:
-        thal = st.text_input('thal: 0 = normal; 1 = fixed defect; 2 = reversable defect')
+        thal = st.text_input('Thal: 0 = normal; 1 = fixed defect; 2 = reversible defect')
 
-    # code for Prediction
     heart_diagnosis = ''
-
-    # creating a button for Prediction
-
-    if st.button('Heart Disease Test Result'):
-
+    if st.button('Get Heart Disease Test Result'):
         user_input = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
-
         user_input = [float(x) for x in user_input]
-
         heart_prediction = heart_disease_model.predict([user_input])
-
         if heart_prediction[0] == 1:
-            heart_diagnosis = 'The person is having heart disease'
+            heart_diagnosis = 'The person has heart disease.'
         else:
-            heart_diagnosis = 'The person does not have any heart disease'
-
+            heart_diagnosis = 'The person does not have heart disease.'
     st.success(heart_diagnosis)
 
-# Parkinson's Prediction Page
 if selected == "Parkinsons Prediction":
-
-    # page title
-    st.title("Parkinson's Disease Prediction using ML")
-
+    st.title("Parkinson's Disease Prediction with AI")
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
@@ -217,10 +214,10 @@ if selected == "Parkinsons Prediction":
         DFA = st.text_input('DFA')
 
     with col4:
-        spread1 = st.text_input('spread1')
+        spread1 = st.text_input('Spread 1')
 
     with col5:
-        spread2 = st.text_input('spread2')
+        spread2 = st.text_input('Spread 2')
 
     with col1:
         D2 = st.text_input('D2')
@@ -228,23 +225,13 @@ if selected == "Parkinsons Prediction":
     with col2:
         PPE = st.text_input('PPE')
 
-    # code for Prediction
     parkinsons_diagnosis = ''
-
-    # creating a button for Prediction    
-    if st.button("Parkinson's Test Result"):
-
-        user_input = [fo, fhi, flo, Jitter_percent, Jitter_Abs,
-                      RAP, PPQ, DDP,Shimmer, Shimmer_dB, APQ3, APQ5,
-                      APQ, DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]
-
+    if st.button("Get Parkinson's Test Result"):
+        user_input = [fo, fhi, flo, Jitter_percent, Jitter_Abs, RAP, PPQ, DDP, Shimmer, Shimmer_dB, APQ3, APQ5, APQ, DDA, NHR, HNR, RPDE, DFA, spread1, spread2, D2, PPE]
         user_input = [float(x) for x in user_input]
-
         parkinsons_prediction = parkinsons_model.predict([user_input])
-
         if parkinsons_prediction[0] == 1:
-            parkinsons_diagnosis = "The person has Parkinson's disease"
+            parkinsons_diagnosis = "The person has Parkinson's disease."
         else:
-            parkinsons_diagnosis = "The person does not have Parkinson's disease"
-
+            parkinsons_diagnosis = "The person does not have Parkinson's disease."
     st.success(parkinsons_diagnosis)
